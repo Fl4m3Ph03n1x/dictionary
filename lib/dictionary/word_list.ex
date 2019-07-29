@@ -1,13 +1,16 @@
 defmodule Dictionary.WordList do
+  use Agent
 
-  @spec start_link :: Agent.on_start
-  def start_link, do: Agent.start_link(&word_list/0)
+  @me __MODULE__
 
-  @spec random_word(pid) :: String.t
-  def random_word(pid), do: Agent.get(pid, &Enum.random/1)
+  @spec start_link(any) :: Agent.on_start
+  def start_link(_args), do: Agent.start_link(&word_list/0, name: @me)
+
+  @spec random_word() :: String.t
+  def random_word, do: Agent.get(@me, &Enum.random/1)
 
   @spec word_list :: [String.t, ...]
-  def word_list, do:
+  defp word_list, do:
     "../../assets/words.txt"
     |> Path.expand(__DIR__)
     |> File.read!()
